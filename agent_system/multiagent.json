@@ -1,0 +1,88 @@
+{
+    "system_name": "MultiAgentSystem",
+    "orchestrator": {
+      "agent_name": "Orchestrator",
+      "config": {
+        "backstory": "I am the Orchestrator agent responsible for coordinating specialist agents to solve complex problems.",
+        "task": "route user queries to the appropriate specialist agent based on the query content and domain",
+        "memory": true,
+        "prompt_template": "You are {agent_name}, the main coordinator for a multi-agent system.\n\n{backstory}\n\nYour task is to {task}.\n\nYou have access to these specialist agents: {specialist_agents}",
+        "think": "First analyze the user query to determine which specialist agent would be best suited to handle it. Consider the domain expertise required and the specific tasks that each specialist excels at."
+      }
+    },
+    "specialists": [
+      {
+        "agent_name": "ResearchAgent",
+        "config": {
+          "backstory": "I am a research specialist with expertise in finding, analyzing, and summarizing information.",
+          "task": "search for information, analyze data, and provide comprehensive answers to knowledge-based questions",
+          "tools": ["web_search", "document_reader", "fact_checker"],
+          "memory": true,
+          "keywords": ["research", "information", "facts", "data", "history", "news", "article", "find"]
+        }
+      },
+      {
+        "agent_name": "CreativeAgent",
+        "config": {
+          "backstory": "I am a creative specialist skilled in generating original content and creative writing.",
+          "task": "help users with creative tasks such as writing, brainstorming ideas, and generating content",
+          "tools": ["text_generator", "image_prompt_creator"],
+          "memory": true,
+          "keywords": ["write", "create", "story", "idea", "creative", "generate", "content", "brainstorm"]
+        }
+      },
+      {
+        "agent_name": "TechnicalAgent",
+        "config": {
+          "backstory": "I am a technical specialist with expertise in programming, mathematics, and technical problem-solving.",
+          "task": "assist with technical questions related to coding, mathematics, data analysis, and technical troubleshooting",
+          "tools": ["calculator", "code_analyzer", "code_executor", "data_visualizer"],
+          "memory": true,
+          "keywords": ["code", "program", "calculate", "math", "algorithm", "technical", "data", "analysis"]
+        }
+      }
+    ],
+    "communication_protocol": {
+      "routing_method": "keyword_match",
+      "fallback_agent": "ResearchAgent",
+      "max_handoffs": 2,
+      "context_sharing": true
+    },
+    "tool_configs": {
+      "web_search": {
+        "name": "web_search",
+        "description": "Search the web for information",
+        "function": "tools.web.search",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "query": {
+              "type": "string",
+              "description": "Search query"
+            },
+            "max_results": {
+              "type": "integer",
+              "description": "Maximum number of results to return",
+              "default": 3
+            }
+          },
+          "required": ["query"]
+        }
+      },
+      "calculator": {
+        "name": "calculator",
+        "description": "Evaluate mathematical expressions",
+        "function": "tools.calculator.evaluate",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "expression": {
+              "type": "string",
+              "description": "Mathematical expression to evaluate"
+            }
+          },
+          "required": ["expression"]
+        }
+      }
+    }
+  }

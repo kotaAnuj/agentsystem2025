@@ -1,0 +1,124 @@
+{
+    "system_name": "HierarchicalAgentSystem",
+    "head_agent": {
+      "agent_name": "HeadAgent",
+      "config": {
+        "backstory": "I am the Executive Agent responsible for breaking down complex tasks, delegating to specialized sub-agents, and synthesizing their results.",
+        "task": "manage and coordinate sub-agents to efficiently solve complex problems, providing a unified response to the user",
+        "memory": true,
+        "llm_provider": "anthropic",
+        "model": "claude-3-opus-20240229",
+        "prompt_template": "You are {agent_name}, an executive coordinator managing a team of specialized AI sub-agents.\n\n{backstory}\n\nYour task is to {task}.\n\nWhen given a user query, follow these steps:\n1. Analyze the query to identify required subtasks\n2. Delegate subtasks to appropriate sub-agents\n3. Monitor sub-agent responses\n4. Synthesize a cohesive final response\n5. Handle any follow-up questions",
+        "think": "Think step-by-step about how to decompose this complex task into smaller, manageable subtasks. Consider which sub-agent is best suited for each subtask based on their specializations."
+      },
+      "tools": ["task_planner", "result_synthesizer"]
+    },
+    "sub_agents": [
+      {
+        "agent_name": "DataAnalyst",
+        "config": {
+          "backstory": "I am a Data Analyst agent specialized in processing and analyzing numerical data to extract insights.",
+          "task": "analyze data, generate statistics, create visualizations, and interpret numerical information",
+          "tools": ["data_analyzer", "calculator", "data_visualizer"],
+          "memory": false,
+          "llm_provider": "openai",
+          "model": "gpt-4"
+        },
+        "specialization": ["data analysis", "statistics", "visualization", "trends"]
+      },
+      {
+        "agent_name": "Researcher",
+        "config": {
+          "backstory": "I am a Research agent focused on gathering information, fact-checking, and providing comprehensive answers.",
+          "task": "search for information, verify facts, summarize findings, and provide well-documented answers",
+          "tools": ["web_search", "document_reader", "fact_checker"],
+          "memory": false,
+          "llm_provider": "openai",
+          "model": "gpt-4"
+        },
+        "specialization": ["research", "information retrieval", "fact-checking", "summarization"]
+      },
+      {
+        "agent_name": "Coder",
+        "config": {
+          "backstory": "I am a Coding agent specialized in writing, debugging, and explaining code across multiple programming languages.",
+          "task": "write code, debug programs, explain technical concepts, and provide programming solutions",
+          "tools": ["code_executor", "code_analyzer", "documentation_lookup"],
+          "memory": false,
+          "llm_provider": "anthropic",
+          "model": "claude-3-opus-20240229"
+        },
+        "specialization": ["programming", "code generation", "debugging", "technical explanation"]
+      }
+    ],
+    "task_delegation": {
+      "delegation_method": "specialization_match",
+      "execution_mode": "parallel",
+      "max_subtasks": 5,
+      "result_format": {
+        "title": "Subtask title",
+        "findings": "Summary of findings",
+        "details": "Detailed information",
+        "confidence": "Confidence score (0-1)"
+      }
+    },
+    "tool_configs": {
+      "task_planner": {
+        "name": "task_planner",
+        "description": "Create a plan breaking down a complex task into subtasks",
+        "function": "tools.manager.create_task_plan",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "task": {
+              "type": "string",
+              "description": "Complex task to break down"
+            },
+            "max_subtasks": {
+              "type": "integer",
+              "description": "Maximum number of subtasks to create",
+              "default": 5
+            }
+          },
+          "required": ["task"]
+        }
+      },
+      "result_synthesizer": {
+        "name": "result_synthesizer",
+        "description": "Combine results from multiple sub-agents into a coherent response",
+        "function": "tools.manager.synthesize_results",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "results": {
+              "type": "array",
+              "description": "Array of results from sub-agents",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "agent": {
+                    "type": "string",
+                    "description": "Name of the sub-agent"
+                  },
+                  "subtask": {
+                    "type": "string",
+                    "description": "Subtask description"
+                  },
+                  "result": {
+                    "type": "string",
+                    "description": "Result of the subtask"
+                  }
+                }
+              }
+            },
+            "format": {
+              "type": "string",
+              "description": "Format of the synthesized response",
+              "enum": ["concise", "detailed", "technical"]
+            }
+          },
+          "required": ["results"]
+        }
+      }
+    }
+  }

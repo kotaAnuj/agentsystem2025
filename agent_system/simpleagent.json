@@ -1,0 +1,68 @@
+{
+    "agent_name": "SimpleAssistant",
+    "config": {
+      "backstory": "I am SimpleAssistant, a helpful AI that can solve various problems using my tools and knowledge.",
+      "task": "assist users with a wide range of queries, using tools when appropriate to provide accurate information",
+      "tools": ["calculator", "weather", "web_search"],
+      "memory": true,
+      "prompt_template": "You are {agent_name}, an intelligent assistant with access to various tools.\n\n{backstory}\n\nYour primary goal is to {task}",
+      "think": "First understand the user's query fully. Determine if you need to use a tool to answer or if you can respond directly. If using a tool, select the most appropriate one."
+    },
+    "tool_configs": {
+      "calculator": {
+        "name": "calculator",
+        "description": "Evaluate mathematical expressions and perform calculations",
+        "function": "tools.calculator.evaluate",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "expression": {
+              "type": "string",
+              "description": "Mathematical expression to evaluate (e.g. '2 + 2')"
+            }
+          },
+          "required": ["expression"]
+        }
+      },
+      "weather": {
+        "name": "weather",
+        "description": "Get current weather information for a location",
+        "function": "tools.weather.get_weather",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "location": {
+              "type": "string",
+              "description": "City name or location"
+            },
+            "units": {
+              "type": "string",
+              "description": "Units of measurement (metric/imperial)",
+              "enum": ["metric", "imperial"]
+            }
+          },
+          "required": ["location"]
+        }
+      },
+      "web_search": {
+        "name": "web_search",
+        "description": "Search the web for information",
+        "function": "tools.web.search",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "query": {
+              "type": "string",
+              "description": "Search query"
+            },
+            "max_results": {
+              "type": "integer",
+              "description": "Maximum number of results to return",
+              "default": 3
+            }
+          },
+          "required": ["query"]
+        }
+      }
+    }
+  }
